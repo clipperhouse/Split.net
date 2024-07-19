@@ -1,8 +1,6 @@
 ﻿namespace Tests;
 
-using System.Reflection.PortableExecutable;
 using System.Text;
-using Microsoft.VisualStudio.TestPlatform.CoreUtilities.Extensions;
 using Split;
 
 public class BasicTests
@@ -22,7 +20,7 @@ public class BasicTests
         // Iterate over the tokens
         foreach (var range in words)
         {
-            Console.WriteLine(example[range].ToString().AddDoubleQuote());
+            Console.WriteLine(example[range].ToString());
         }
 
         /*
@@ -49,17 +47,17 @@ public class BasicTests
 
         foreach (var range in ws)
         {
-            Console.WriteLine(Encoding.UTF8.GetString(bytes[range]).AddDoubleQuote());
+            Console.WriteLine(Encoding.UTF8.GetString(bytes[range]));
 
         }
 
         Console.WriteLine("Mine:");
 
-        var words2 = new SplitEnumerator<char>(example, " .");
+        var words2 = example.AsSpan().SplitOnAny(" .");
 
         foreach (var word in words2)
         {
-            Console.WriteLine(word.ToString().AddDoubleQuote());
+            Console.WriteLine("\"" + word.ToString() + "\"");
         }
     }
 }
