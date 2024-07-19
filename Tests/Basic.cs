@@ -1,5 +1,6 @@
 ﻿namespace Tests;
 
+using System.Buffers;
 using System.Text;
 using Split;
 using Split.Extensions;
@@ -59,6 +60,70 @@ public class BasicTests
         foreach (var word in words2)
         {
             Console.WriteLine("\"" + Encoding.UTF8.GetString(word) + "\"");
+        }
+    }
+
+    [Fact]
+    public void Overloads()
+    {
+        // Just to avoid breaking the API, no actual tests
+
+        var example = "foo";
+        {
+            char separator = ' ';
+            Span.Split(example, separator);
+
+            var separators = ". ";
+            Span.Split(example, separators);
+            Span.SplitAny(example, separators);
+
+            var search = SearchValues.Create(separators);
+            Span.SplitAny(example, search);
+        }
+
+        var bytes = Encoding.UTF8.GetBytes(example);
+        {
+            byte separator = (byte)' ';
+            Span.Split(bytes, separator);
+
+            var separators = ". "u8;
+            Span.Split(bytes, separators);
+            Span.SplitAny(bytes, separators);
+
+            var search = SearchValues.Create(separators);
+            Span.SplitAny(bytes, search);
+        }
+    }
+
+    [Fact]
+    public void Extensions()
+    {
+        // Just to avoid breaking the API, no actual tests
+
+        var example = "foo";
+        {
+            char separator = ' ';
+            example.SplitOn(separator);
+
+            var separators = ". ";
+            example.SplitOn(separators);
+            example.SplitOnAny(separators);
+
+            var search = SearchValues.Create(separators);
+            example.SplitOnAny(search);
+        }
+
+        var bytes = Encoding.UTF8.GetBytes(example);
+        {
+            byte separator = (byte)' ';
+            bytes.SplitOn(separator);
+
+            var separators = ". "u8;
+            bytes.SplitOn(separators);
+            bytes.SplitOnAny(separators);
+
+            var search = SearchValues.Create(separators);
+            bytes.SplitOnAny(search);
         }
     }
 }
