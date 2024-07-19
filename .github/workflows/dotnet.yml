@@ -12,6 +12,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -24,7 +26,7 @@ jobs:
         cache-dependency-path: '**/packages.lock.json'
 
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore --locked-mode
 
     - name: Build the project
       run: dotnet build --no-restore
