@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // https://github.com/dotnet/runtime/blob/main/LICENSE.TXT
 
+// This is the Microsoft implementation from .Net 9.0, intended as a backport for .Net 8.0
+
 using System.Buffers;
 
 namespace Split;
@@ -64,5 +66,4 @@ public static partial class MemoryExtensions
     /// </remarks>
     public static SpanSplitEnumerator<T> SplitAny<T>(this ReadOnlySpan<T> source, SearchValues<T> separators) where T : IEquatable<T> =>
         new SpanSplitEnumerator<T>(source, separators);
-
 }

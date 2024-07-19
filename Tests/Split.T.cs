@@ -3,23 +3,26 @@
 // See the LICENSE file in the project root for more information.
 // https://github.com/dotnet/runtime/blob/main/LICENSE.TXT
 
-using System.Buffers;
+// This is the Microsoft implementation from .Net 9.0, intended as a backport for .Net 8.0
 
-namespace Split.SpanTests;
+using System.Buffers;
+using Split;
+
+namespace Tests;
 
 public static partial class ReadOnlySpanTests
 {
     [Fact]
     public static void DefaultSpanSplitEnumeratorBehaviour()
     {
-        var charSpanEnumerator = new MemoryExtensions.SpanSplitEnumerator<char>();
+        var charSpanEnumerator = new SpanSplitEnumerator<char>();
         Assert.Equal(new Range(0, 0), charSpanEnumerator.Current);
         Assert.False(charSpanEnumerator.MoveNext());
 
         // Implicit DoesNotThrow assertion
         charSpanEnumerator.GetEnumerator();
 
-        var stringSpanEnumerator = new MemoryExtensions.SpanSplitEnumerator<string>();
+        var stringSpanEnumerator = new SpanSplitEnumerator<string>();
         Assert.Equal(new Range(0, 0), stringSpanEnumerator.Current);
         Assert.False(stringSpanEnumerator.MoveNext());
         stringSpanEnumerator.GetEnumerator();
@@ -194,7 +197,7 @@ public static partial class ReadOnlySpanTests
         }
     }
 
-    private static void AssertEnsureCorrectEnumeration<T>(MemoryExtensions.SpanSplitEnumerator<T> enumerator, Range[] result) where T : IEquatable<T>
+    private static void AssertEnsureCorrectEnumeration<T>(SpanSplitEnumerator<T> enumerator, Range[] result) where T : IEquatable<T>
     {
         Assert.Equal(new Range(0, 0), enumerator.Current);
 
