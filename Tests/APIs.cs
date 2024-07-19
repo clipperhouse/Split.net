@@ -104,22 +104,34 @@ public class BasicTests
         {
             char separator = ' ';
             example.SplitOn(separator);
+            example.AsSpan().SplitOn(separator);
 
             var separators = ". ";
             example.SplitOn(separators);
+            example.SplitOn(separators.AsSpan());
+            example.AsSpan().SplitOn(separators);
+            example.AsSpan().SplitOn(separators.AsSpan());
+
             example.SplitOnAny(separators);
+            example.SplitOnAny(separators.AsSpan());
+            example.AsSpan().SplitOnAny(separators);
+            example.AsSpan().SplitOnAny(separators.AsSpan());
 
             var search = SearchValues.Create(separators);
             example.SplitOnAny(search);
+            example.AsSpan().SplitOnAny(search);
         }
 
         var bytes = Encoding.UTF8.GetBytes(example);
         {
             byte separator = (byte)' ';
             bytes.SplitOn(separator);
+            bytes.AsSpan().SplitOn(separator);
+            ReadOnlySpan<byte> rbytes = bytes.AsSpan();
+            rbytes.SplitOn(separator);
 
             var separators = ". "u8;
-            bytes.SplitOn(separators);
+            bytes.AsSpan().SplitOn(separators);
             bytes.SplitOnAny(separators);
 
             var search = SearchValues.Create(separators);
