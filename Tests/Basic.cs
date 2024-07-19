@@ -2,6 +2,7 @@
 
 using System.Text;
 using Split;
+using Split.Extensions;
 
 public class BasicTests
 {
@@ -53,11 +54,11 @@ public class BasicTests
 
         Console.WriteLine("Mine:");
 
-        var words2 = example.AsSpan().SplitOnAny(" .");
+        var words2 = bytes.SplitOnAny(". "u8); ;
 
         foreach (var word in words2)
         {
-            Console.WriteLine("\"" + word.ToString() + "\"");
+            Console.WriteLine("\"" + Encoding.UTF8.GetString(word) + "\"");
         }
     }
 }
