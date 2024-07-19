@@ -21,6 +21,7 @@ jobs:
       with:
         dotnet-version: '8.x'
         cache: true
+        cache-dependency-path: '**/packages.lock.json'
 
     - name: Install dependencies
       run: dotnet restore
