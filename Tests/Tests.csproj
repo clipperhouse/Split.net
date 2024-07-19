@@ -24,4 +24,9 @@
     <ProjectReference Include="..\Split\Split.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
 </Project>
