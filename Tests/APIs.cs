@@ -103,39 +103,81 @@ public class BasicTests
         var example = "foo";
         {
             char separator = ' ';
-            example.SplitOn(separator);
-            example.AsSpan().SplitOn(separator);
 
-            var separators = ". ";
-            example.SplitOn(separators);
-            example.SplitOn(separators.AsSpan());
-            example.AsSpan().SplitOn(separators);
-            example.AsSpan().SplitOn(separators.AsSpan());
+            var this1 = example;
+            Span<char> this2 = new(this1.ToCharArray());
+            ReadOnlySpan<char> this3 = this2;
+            var this4 = this1.ToCharArray();
 
-            example.SplitOnAny(separators);
-            example.SplitOnAny(separators.AsSpan());
-            example.AsSpan().SplitOnAny(separators);
-            example.AsSpan().SplitOnAny(separators.AsSpan());
+            this1.SplitOn(separator);
+            this2.SplitOn(separator);
+            this3.SplitOn(separator);
+            this4.SplitOn(separator);
 
-            var search = SearchValues.Create(separators);
-            example.SplitOnAny(search);
-            example.AsSpan().SplitOnAny(search);
+            var separators1 = ". ";
+            var separators2 = separators1.AsSpan();
+            ReadOnlySpan<char> separators3 = separators2;
+            var separators4 = separators1.ToCharArray();
+
+            this1.SplitOn(separators1);
+            this2.SplitOn(separators1);
+            this3.SplitOn(separators1);
+            this4.SplitOn(separators1);
+
+            this1.SplitOnAny(separators1);
+            this2.SplitOnAny(separators1);
+            this3.SplitOnAny(separators1);
+            this4.SplitOnAny(separators1);
+
+            this1.SplitOnAny(separators2);
+            this2.SplitOnAny(separators2);
+            this3.SplitOnAny(separators2);
+            this4.SplitOnAny(separators2);
+
+            this1.SplitOnAny(separators3);
+            this2.SplitOnAny(separators3);
+            this3.SplitOnAny(separators3);
+            this4.SplitOnAny(separators3);
+
+            this1.SplitOnAny(separators4);
+            this2.SplitOnAny(separators4);
+            this3.SplitOnAny(separators4);
+            this4.SplitOnAny(separators4);
+
+            var search = SearchValues.Create(separators1);
+            this1.SplitOnAny(search);
+            this2.SplitOnAny(search);
+            this3.SplitOnAny(search);
+            this4.SplitOnAny(search);
         }
 
         var bytes = Encoding.UTF8.GetBytes(example);
         {
             byte separator = (byte)' ';
-            bytes.SplitOn(separator);
-            bytes.AsSpan().SplitOn(separator);
-            ReadOnlySpan<byte> rbytes = bytes.AsSpan();
-            rbytes.SplitOn(separator);
 
-            var separators = ". "u8;
-            bytes.AsSpan().SplitOn(separators);
-            bytes.SplitOnAny(separators);
+            var this1 = bytes;
+            var this2 = bytes.AsSpan();
+            ReadOnlySpan<byte> this3 = this2;
+
+            this1.SplitOn(separator);
+            this2.SplitOn(separator);
+            this3.SplitOn(separator);
+
+            var separators = Encoding.UTF8.GetBytes(". ");
+            ReadOnlySpan<byte> rsep = separators.AsSpan();
+
+            this1.SplitOn(rsep);
+            this2.SplitOn(rsep);
+            this3.SplitOn(rsep);
+
+            this1.SplitOnAny(rsep);
+            this2.SplitOnAny(rsep);
+            this3.SplitOnAny(rsep);
 
             var search = SearchValues.Create(separators);
-            bytes.SplitOnAny(search);
+            this1.SplitOnAny(search);
+            this2.SplitOnAny(search);
+            this3.SplitOnAny(search);
         }
     }
 }

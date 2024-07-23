@@ -31,9 +31,9 @@ public ref partial struct SpanSplitEnumerator<T> where T : IEquatable<T>
     /// <summary>Mode that dictates how the instance was configured and how its fields should be used in <see cref="MoveNext"/>.</summary>
     private SpanSplitEnumeratorMode _splitMode;
     /// <summary>The inclusive starting index in <see cref="_span"/> of the current range.</summary>
-    private int _startCurrent = 0;
+    internal int _startCurrent = 0;
     /// <summary>The exclusive ending index in <see cref="_span"/> of the current range.</summary>
-    private int _endCurrent = 0;
+    internal int _endCurrent = 0;
     /// <summary>The index in <see cref="_span"/> from which the next separator search should start.</summary>
     private int _startNext = 0;
 
@@ -177,4 +177,3 @@ public ref partial struct SpanSplitEnumerator<T> where T : IEquatable<T>
         SearchValues
     }
 }
-

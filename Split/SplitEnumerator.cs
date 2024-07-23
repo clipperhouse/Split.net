@@ -27,6 +27,6 @@ public ref struct SplitEnumerator<T> where T : IEquatable<T>
     }
 
     public bool MoveNext() => _enumerator.MoveNext();
-    public ReadOnlySpan<T> Current => _enumerator._span[_enumerator.Current];
+    public ReadOnlySpan<T> Current => _enumerator._span[_enumerator._startCurrent.._enumerator._endCurrent];
     public SplitEnumerator<T> GetEnumerator() => this;
 }
