@@ -3,12 +3,13 @@ using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
-using BenchmarkDotNet.Extensions;
 using BenchmarkDotNet.Running;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Toolkit.HighPerformance;
-using Microsoft.Toolkit.HighPerformance.Extensions;
-using Split;
+using Split.Extensions;
+using BenchmarkDotNet.Columns;
+using BenchmarkDotNet.Reports;
+using BenchmarkDotNet.Jobs;
 
 BenchmarkRunner.Run<Benchmark>();
 
@@ -22,10 +23,6 @@ public class Benchmark
 		public Config()
 		{
 			AddColumn(new Throughput());
-			// AddDiagnoser(new EventPipeProfiler(EventPipeProfile.CpuSampling));
-			// You can also use other profilers like:
-			// AddDiagnoser(new EtwProfiler());
-			// AddDiagnoser(new PerfCollectProfiler()); // for Linux
 		}
 	}
 
@@ -43,12 +40,25 @@ public class Benchmark
 		sampleStream = new MemoryStream(sample);
 	}
 
+	static readonly char[] separators = [' ', '.'];
+
+	[Benchmark]
+	public void SplitOn()
+	{
+		var tokens = sampleStr.SplitOn(' ');
+
+		foreach (var token in tokens)
+		{
+			// buffer.Append(token);
+		}
+	}
+
+	char[] space = " ".ToCharArray();
+
 	[Benchmark]
 	public void StringTokenizer()
 	{
-		StringBuilder buffer = new();
-
-		var tokenizer = new StringTokenizer(sampleStr, [' ', '.']);
+		var tokenizer = new StringTokenizer(sampleStr, space);
 
 		foreach (StringSegment segment in tokenizer)
 		{
@@ -59,8 +69,6 @@ public class Benchmark
 	[Benchmark]
 	public void StringTokenize()
 	{
-		StringBuilder buffer = new();
-
 		var tokenizer = sampleStr.Tokenize(' ');
 
 		foreach (var token in tokenizer)
@@ -72,22 +80,19 @@ public class Benchmark
 	[Benchmark]
 	public void StringSplit()
 	{
-		StringBuilder buffer = new();
-
-		string[] tokenizer = sampleStr.Split([' ', '.']);
+		string[] tokenizer = sampleStr.Split(' ');
 
 		foreach (string segment in tokenizer)
 		{
 			// buffer.Append(segment);
 		}
 	}
-	static readonly SearchValues<char> search = SearchValues.Create([' ', '.']);
-	[Benchmark]
-	public void SpanSplit()
-	{
-		StringBuilder buffer = new();
 
-		var tokens = Span.SplitAny(sampleStr, search);
+	static readonly SearchValues<char> search = SearchValues.Create(" ");
+	[Benchmark]
+	public void SplitSearchValues()
+	{
+		var tokens = sampleStr.SplitOnAny(search);
 		foreach (var token in tokens)
 		{
 			// buffer.Append(token);

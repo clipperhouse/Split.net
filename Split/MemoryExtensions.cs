@@ -8,7 +8,7 @@ using System.Buffers;
 
 namespace Split;
 
-public static partial class MemoryExtensions
+static partial class MemoryExtensions
 {
     /// <summary>
     /// Returns a type that allows for enumeration of each element within a split span

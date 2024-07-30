@@ -1,41 +1,46 @@
 ﻿using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace Split;
 
-public ref struct SplitEnumerator<T> where T : IEquatable<T>
+public ref struct Enumerator<T> where T : IEquatable<T>
 {
-    private SpanSplitEnumerator<T> _enumerator;
+    private SpanSplitEnumerator<T> en;
 
-    internal SplitEnumerator(ReadOnlySpan<T> source, T separator)
+    internal Enumerator(ReadOnlySpan<T> source, T separator)
     {
-        _enumerator = MemoryExtensions.Split(source, separator);
+        en = MemoryExtensions.Split(source, separator);
     }
 
-    internal SplitEnumerator(ReadOnlySpan<T> source, ReadOnlySpan<T> separator, bool treatAsSingleSeparator)
+    internal Enumerator(ReadOnlySpan<T> source, ReadOnlySpan<T> separator, bool treatAsSingleSeparator)
     {
-        _enumerator = MemoryExtensions.Split(source, separator);
+        en = MemoryExtensions.Split(source, separator);
     }
 
-    internal SplitEnumerator(ReadOnlySpan<T> source, ReadOnlySpan<T> separator)
+    internal Enumerator(ReadOnlySpan<T> source, ReadOnlySpan<T> separator)
     {
-        _enumerator = MemoryExtensions.SplitAny(source, separator);
+        en = MemoryExtensions.SplitAny(source, separator);
     }
 
-    internal SplitEnumerator(ReadOnlySpan<T> source, SearchValues<T> searchValues)
+    internal Enumerator(ReadOnlySpan<T> source, SearchValues<T> searchValues)
     {
-        _enumerator = MemoryExtensions.SplitAny(source, searchValues);
+        en = MemoryExtensions.SplitAny(source, searchValues);
     }
 
-    public bool MoveNext() => _enumerator.MoveNext();
-    public ReadOnlySpan<T> Current => _enumerator._span[_enumerator._startCurrent.._enumerator._endCurrent];
-    public SplitEnumerator<T> GetEnumerator() => this;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool MoveNext() => en.MoveNext();
+
+    public readonly ReadOnlySpan<T> Current => en.input[en.start..en.end];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly Enumerator<T> GetEnumerator() => this;
 
 
     /// <summary>
     /// Iterate over all tokens and collects them into a list, allocating a new array for each token.
     /// </summary>
     /// <returns>List<byte[]> or List<char[]>, depending on the input</returns>
-    public List<T[]> ToList()
+    public readonly List<T[]> ToList()
     {
         var result = new List<T[]>();
         foreach (var token in this)
@@ -49,7 +54,7 @@ public ref struct SplitEnumerator<T> where T : IEquatable<T>
     /// Iterates over all tokens and collects them into an array, allocating a new array for each token.
     /// </summary>
     /// <returns>byte[][] or char[][], depending on the input</returns>
-    public T[][] ToArray()
+    public readonly T[][] ToArray()
     {
         return this.ToList().ToArray();
     }

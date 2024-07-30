@@ -13,7 +13,7 @@ public class Throughput : IColumn
         var ourReport = summary.Reports.First(x => x.BenchmarkCase.Equals(benchmarkCase));
         long length = new FileInfo("sample.txt").Length;
         var mean = ourReport.ResultStatistics!.Mean;
-        return $"{length / mean:#####.000} GB/s";
+        return $"{length / mean:#####.000} GB/s".PadLeft(12);
     }
 
     public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);
