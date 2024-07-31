@@ -62,19 +62,20 @@ internal ref partial struct SpanSplitEnumerator<T> where T : IEquatable<T>
     /// it will instead use <see cref="SpanSplitEnumeratorMode.SearchValues"/> with a cached <see cref="SearchValues{Char}"/>
     /// for all whitespace characters.
     /// </remarks>
-    internal SpanSplitEnumerator(ReadOnlySpan<T> span, ReadOnlySpan<T> separators)
+    internal SpanSplitEnumerator(ReadOnlySpan<T> input, ReadOnlySpan<T> separators)
     {
+        this.input = input;
         this.separators = separators;
         mode = SpanSplitEnumeratorMode.Any;
     }
 
     /// <summary>Initializes the enumerator for <see cref="SpanSplitEnumeratorMode.Sequence"/> (or <see cref="SpanSplitEnumeratorMode.EmptySequence"/> if the separator is empty).</summary>
     /// <remarks><paramref name="treatAsSingleSeparator"/> must be true.</remarks>
-    internal SpanSplitEnumerator(ReadOnlySpan<T> span, ReadOnlySpan<T> separator, bool treatAsSingleSeparator)
+    internal SpanSplitEnumerator(ReadOnlySpan<T> input, ReadOnlySpan<T> separator, bool treatAsSingleSeparator)
     {
         Debug.Assert(treatAsSingleSeparator, "Should only ever be called as true; exists to differentiate from separators overload");
 
-        input = span;
+        this.input = input;
         separators = separator;
         mode = separator.Length == 0 ?
             SpanSplitEnumeratorMode.EmptySequence :

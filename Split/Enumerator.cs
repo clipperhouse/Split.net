@@ -17,9 +17,9 @@ public ref struct Enumerator<T> where T : IEquatable<T>
         en = MemoryExtensions.Split(source, separator);
     }
 
-    internal Enumerator(ReadOnlySpan<T> source, ReadOnlySpan<T> separator)
+    internal Enumerator(ReadOnlySpan<T> source, ReadOnlySpan<T> separators)
     {
-        en = MemoryExtensions.SplitAny(source, separator);
+        en = MemoryExtensions.SplitAny(source, separators);
     }
 
     internal Enumerator(ReadOnlySpan<T> source, SearchValues<T> searchValues)

@@ -20,24 +20,15 @@ public class BasicTests
         }
 
         /*
-        Hello
-        ,
-
-        🌏
-
-        world
-        .
-
-        你
-        好
-        ，
-        世
-        界
-        .
+        Hello,🌏
+        world.
+        你好,
+        世界.
         */
 
         var bytes = Encoding.UTF8.GetBytes(example);
-        var splits2 = bytes.SplitOn((byte)' ');
+        var separators = " ,."u8.ToArray();
+        var splits2 = bytes.SplitOnAny(separators);
 
         foreach (var split2 in splits2)
         {
