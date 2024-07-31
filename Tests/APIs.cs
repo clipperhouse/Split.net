@@ -32,7 +32,7 @@ public class BasicTests
 
         foreach (var split2 in splits2)
         {
-            Console.OpenStandardOutput().Write(split2);
+            Console.OpenStandardOutput().Write([.. split2, (byte)'\n']);
         }
     }
 
