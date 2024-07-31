@@ -18,4 +18,7 @@ public static partial class SplitExtensions
 
     public static Enumerator<char> SplitOn(this ReadOnlySpan<char> source, ReadOnlySpan<char> separator) => Split.Chars(source, separator);
 
+    public static StreamEnumerator<char> SplitOn(this TextReader reader, char separator) => Split.Chars(reader, separator);
+
+    public static StreamEnumerator<char> SplitOn(this TextReader reader, ReadOnlySpan<char> separator) => Split.Chars(reader, separator);
 }

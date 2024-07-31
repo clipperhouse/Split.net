@@ -16,26 +16,29 @@ namespace Split;
 internal ref partial struct SpanSplitEnumerator<T> where T : IEquatable<T>
 {
     /// <summary>The input span being split.</summary>
-    internal readonly ReadOnlySpan<T> input;
+    internal ReadOnlySpan<T> input;
 
-    /// <summary>A single separator to use when <see cref="_splitMode"/> is <see cref="SpanSplitEnumeratorMode.SingleElement"/>.</summary>
-    private readonly T _separator = default!;
+    /// <summary>A single separator to use when <see cref="mode"/> is <see cref="SpanSplitEnumeratorMode.SingleElement"/>.</summary>
+    private readonly T separator = default!;
     /// <summary>
-    /// A separator span to use when <see cref="_splitMode"/> is <see cref="SpanSplitEnumeratorMode.Sequence"/> (in which case
+    /// A separator span to use when <see cref="mode"/> is <see cref="SpanSplitEnumeratorMode.Sequence"/> (in which case
     /// it's treated as a single separator) or <see cref="SpanSplitEnumeratorMode.Any"/> (in which case it's treated as a set of separators).
     /// </summary>
-    private readonly ReadOnlySpan<T> _separatorBuffer;
-    /// <summary>A set of separators to use when <see cref="_splitMode"/> is <see cref="SpanSplitEnumeratorMode.SearchValues"/>.</summary>
-    private readonly SearchValues<T> _searchValues = default!;
+    private readonly ReadOnlySpan<T> separators;
+    /// <summary>A set of separators to use when <see cref="mode"/> is <see cref="SpanSplitEnumeratorMode.SearchValues"/>.</summary>
+    private readonly SearchValues<T> searchValues = default!;
 
     /// <summary>Mode that dictates how the instance was configured and how its fields should be used in <see cref="MoveNext"/>.</summary>
-    private SpanSplitEnumeratorMode _splitMode;
+    private readonly SpanSplitEnumeratorMode mode;
     /// <summary>The inclusive starting index in <see cref="input"/> of the current range.</summary>
     internal int start = 0;
     /// <summary>The exclusive ending index in <see cref="input"/> of the current range.</summary>
     internal int end = 0;
     /// <summary>The index in <see cref="input"/> from which the next separator search should start.</summary>
-    private int _startNext = 0;
+    ///
+    public readonly int Position => cursor;
+    private int cursor = 0;
+    private bool done = false;
 
     /// <summary>Gets an enumerator that allows for iteration over the split span.</summary>
     /// <returns>Returns a <see cref="SpanSplitEnumerator{T}"/> that can be used to iterate over the split span.</returns>
@@ -46,11 +49,11 @@ internal ref partial struct SpanSplitEnumerator<T> where T : IEquatable<T>
     public Range Current => new Range(start, end);
 
     /// <summary>Initializes the enumerator for <see cref="SpanSplitEnumeratorMode.SearchValues"/>.</summary>
-    internal SpanSplitEnumerator(ReadOnlySpan<T> span, SearchValues<T> searchValues)
+    internal SpanSplitEnumerator(ReadOnlySpan<T> input, SearchValues<T> searchValues)
     {
-        input = span;
-        _splitMode = SpanSplitEnumeratorMode.SearchValues;
-        _searchValues = searchValues;
+        this.input = input;
+        mode = SpanSplitEnumeratorMode.SearchValues;
+        this.searchValues = searchValues;
     }
 
     /// <summary>Initializes the enumerator for <see cref="SpanSplitEnumeratorMode.Any"/>.</summary>
@@ -61,17 +64,8 @@ internal ref partial struct SpanSplitEnumerator<T> where T : IEquatable<T>
     /// </remarks>
     internal SpanSplitEnumerator(ReadOnlySpan<T> span, ReadOnlySpan<T> separators)
     {
-        input = span;
-        if (typeof(T) == typeof(char) && separators.Length == 0)
-        {
-            _searchValues = Unsafe.As<SearchValues<T>>(SearchValuesStorage.WhiteSpaceChars);
-            _splitMode = SpanSplitEnumeratorMode.SearchValues;
-        }
-        else
-        {
-            _separatorBuffer = separators;
-            _splitMode = SpanSplitEnumeratorMode.Any;
-        }
+        this.separators = separators;
+        mode = SpanSplitEnumeratorMode.Any;
     }
 
     /// <summary>Initializes the enumerator for <see cref="SpanSplitEnumeratorMode.Sequence"/> (or <see cref="SpanSplitEnumeratorMode.EmptySequence"/> if the separator is empty).</summary>
@@ -81,18 +75,18 @@ internal ref partial struct SpanSplitEnumerator<T> where T : IEquatable<T>
         Debug.Assert(treatAsSingleSeparator, "Should only ever be called as true; exists to differentiate from separators overload");
 
         input = span;
-        _separatorBuffer = separator;
-        _splitMode = separator.Length == 0 ?
+        separators = separator;
+        mode = separator.Length == 0 ?
             SpanSplitEnumeratorMode.EmptySequence :
             SpanSplitEnumeratorMode.Sequence;
     }
 
     /// <summary>Initializes the enumerator for <see cref="SpanSplitEnumeratorMode.SingleElement"/>.</summary>
-    internal SpanSplitEnumerator(ReadOnlySpan<T> span, T separator)
+    internal SpanSplitEnumerator(ReadOnlySpan<T> input, T separator)
     {
-        input = span;
-        _separator = separator;
-        _splitMode = SpanSplitEnumeratorMode.SingleElement;
+        this.input = input;
+        this.separator = separator;
+        mode = SpanSplitEnumeratorMode.SingleElement;
     }
 
     /// <summary>
@@ -102,26 +96,28 @@ internal ref partial struct SpanSplitEnumerator<T> where T : IEquatable<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool MoveNext()
     {
+        if (done)
+        {
+            return false;
+        }
+
         // Search for the next separator index.
         int separatorIndex, separatorLength;
-        switch (_splitMode)
+        switch (mode)
         {
-            case SpanSplitEnumeratorMode.None:
-                return false;
-
             case SpanSplitEnumeratorMode.SingleElement:
-                separatorIndex = input.Slice(_startNext).IndexOf(_separator);
+                separatorIndex = input[cursor..].IndexOf(separator);
                 separatorLength = 1;
                 break;
 
             case SpanSplitEnumeratorMode.Any:
-                separatorIndex = input.Slice(_startNext).IndexOfAny(_separatorBuffer);
+                separatorIndex = input[cursor..].IndexOfAny(separators);
                 separatorLength = 1;
                 break;
 
             case SpanSplitEnumeratorMode.Sequence:
-                separatorIndex = input.Slice(_startNext).IndexOf(_separatorBuffer);
-                separatorLength = _separatorBuffer.Length;
+                separatorIndex = input[cursor..].IndexOf(separators);
+                separatorLength = separators.Length;
                 break;
 
             case SpanSplitEnumeratorMode.EmptySequence:
@@ -130,27 +126,37 @@ internal ref partial struct SpanSplitEnumerator<T> where T : IEquatable<T>
                 break;
 
             default:
-                Debug.Assert(_splitMode == SpanSplitEnumeratorMode.SearchValues, $"Unknown split mode: {_splitMode}");
-                separatorIndex = input.Slice(_startNext).IndexOfAny(_searchValues);
+                Debug.Assert(mode == SpanSplitEnumeratorMode.SearchValues, $"Unknown split mode: {mode}");
+                separatorIndex = input[cursor..].IndexOfAny(searchValues);
                 separatorLength = 1;
                 break;
         }
 
-        start = _startNext;
+        start = cursor;
         if (separatorIndex >= 0)
         {
             end = start + separatorIndex;
-            _startNext = end + separatorLength;
+            cursor = end + separatorLength;
         }
         else
         {
-            _startNext = end = input.Length;
-
-            // Set _splitMode to None so that subsequent MoveNext calls will return false.
-            _splitMode = SpanSplitEnumeratorMode.None;
+            cursor = end = input.Length;
+            done = true;
         }
 
         return true;
+    }
+
+    public void Reset()
+    {
+        start = end = cursor = 0;
+        done = false;
+    }
+
+    public void SetText(ReadOnlySpan<T> input)
+    {
+        Reset();
+        this.input = input;
     }
 
     /// <summary>Indicates in which mode <see cref="SpanSplitEnumerator{T}"/> is operating, with regards to how it should interpret its state.</summary>
