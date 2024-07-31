@@ -20,29 +20,18 @@ world.
 你好,
 世界.
 */
-
-var bytes = Encoding.UTF8.GetBytes(example);
-var separators = " ,."u8.ToArray();
-var splits2 = bytes.SplitOnAny(separators);
-
-foreach (var split2 in splits2)
-{
-    Console.OpenStandardOutput().Write([.. split2, (byte)'\n']);
-}
 ```
 
 ⚠️ _Not on Nuget just yet, clone for now_
 
 ### Performance
 
-This package exists to save allocations on the hot path, if you are using something like `strings.Split` from the standard library.
-
-This package:
+This package exists to save allocations on the hot path, if you are using something like `strings.Split` from the standard library. Benchmarks:
 
 ```
 | Method            | Mean      | Error     | StdDev   | Throughput   | Gen0    | Gen1   | Gen2   | Allocated |
 |------------------ |----------:|----------:|---------:|------------- |--------:|-------:|-------:|----------:|
-| SplitOn           |  92.68 us |  8.484 us | 0.465 us |   1.176 GB/s |       - |      - |      - |         - |
+| Split.net         |  92.68 us |  8.484 us | 0.465 us |   1.176 GB/s |       - |      - |      - |         - |
 ```
 
 Standard library:
