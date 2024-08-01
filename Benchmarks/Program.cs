@@ -7,9 +7,6 @@ using BenchmarkDotNet.Running;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Toolkit.HighPerformance;
 using Split.Extensions;
-using BenchmarkDotNet.Columns;
-using BenchmarkDotNet.Reports;
-using BenchmarkDotNet.Jobs;
 
 BenchmarkRunner.Run<Benchmark>();
 
