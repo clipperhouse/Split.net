@@ -1,3 +1,5 @@
+## Split.net
+
 A more efficient splitter for bytes and strings, with a focus on zero allocation, in C#.
 
 ### Usage
@@ -29,37 +31,51 @@ world.
 This package exists to save allocations on the hot path, if you are using something like `strings.Split` from the standard library. Benchmarks:
 
 ```
-| Method            | Mean      | Error     | StdDev   | Throughput   | Gen0    | Gen1   | Gen2   | Allocated |
-|------------------ |----------:|----------:|---------:|------------- |--------:|-------:|-------:|----------:|
-| Split.net         |  92.68 us |  8.484 us | 0.465 us |   1.176 GB/s |       - |      - |      - |         - |
+| Method            | Mean      | Error    | StdDev   | Throughput | Gen0    | Gen1   | Gen2   | Allocated |
+|------------------ |----------:|---------:|---------:|----------- |--------:|-------:|-------:|----------:|
+| Split.net         |  91.68 us | 0.804 us | 0.712 us |  1.19 GB/s |       - |      - |      - |         - |
 ```
 
 Standard library:
 
 ```
-| Method            | Mean      | Error     | StdDev   | Throughput   | Gen0    | Gen1   | Gen2   | Allocated |
-|------------------ |----------:|----------:|---------:|------------- |--------:|-------:|-------:|----------:|
-| StringSplit       | 109.97 us | 13.953 us | 0.765 us |    .991 GB/s | 49.3164 | 0.3662 | 0.1221 |  413352 B |
+| Method            | Mean      | Error    | StdDev   | Throughput | Gen0    | Gen1   | Gen2   | Allocated |
+|------------------ |----------:|---------:|---------:|----------- |--------:|-------:|-------:|----------:|
+| string.Split      | 106.40 us | 0.138 us | 0.108 us |  1.02 GB/s | 49.3164 | 0.3662 | 0.1221 |  413352 B |
 ```
 
 ### Techniques
 
 This package does two things to achieve zero allocations. First, it lazily iterates over the splits, instead of collecting them into an array.
 
-Second, those splits are `Span`s, which are a view into the underlying string, and can stay on the stack.
+Second, each split is a `Span`, which is a "view" into the underlying `string` or `byte[]`, and stays on the stack.
+
+### Data types
+
+This package supports `string`/`char` (UTF-16) and UTF-8 `byte[]`. We also support `Stream` of UTF-8 bytes and `TextReader`/`StreamReader` of `char`.
+
+### Testing
+
+We [test](https://github.com/clipperhouse/Split.net/tree/main/Tests) that Split.net returns identical results to `string.Split`, including various edge cases.
 
 ### Prior art
 
 These are not original ideas! Here are a few other examples with a similar approach:
 
-[`System.MemoryExtensions.SpanSplitEnumerator`](https://github.com/dotnet/runtime/pull/104534) (I started this package by forking SpanSplitEnumerator.)
+- [`SpanSplitEnumerator`](https://github.com/dotnet/runtime/pull/104534) (This Split.net package started as a fork of `SpanSplitEnumerator`)
 
-[`Microsoft.Extensions.Primitives.StringTokenizer`](https://learn.microsoft.com/en-us/dotnet/core/extensions/primitives#the-stringtokenizer-type)
+- [`StringTokenizer`](https://learn.microsoft.com/en-us/dotnet/core/extensions/primitives#the-stringtokenizer-type)
 
-[`Microsoft.Toolkit.HighPerformance.Extensions.StringExtensions.Tokenize`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.toolkit.highperformance.extensions.stringextensions.tokenize?view=win-comm-toolkit-dotnet-6.1)
+- [`StringExtensions.Tokenize`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.toolkit.highperformance.extensions.stringextensions.tokenize?view=win-comm-toolkit-dotnet-6.1)
 
 Each of the above is in the same ballpark of throughput and allocation as this package.
 
-### Why use this package, then?
+### Why use Split.net, then?
 
-Well, it's in progress, but enhancements will include simpler UTF-8 support, as well as streams and readers.
+You might like the UTF-8 support, SplitAny, streams & readers, or heck maybe you just like the API. Feedback welcome.
+
+### By the way
+
+If you are splitting in order to get "words" from natural text, you may wish to use the Unicode definition of word boundaries, which I've implemented in [this package](https://github.com/clipperhouse/uax29.net).
+
+I've also implemented these ideas [in Go](https://github.com/clipperhouse/split).
