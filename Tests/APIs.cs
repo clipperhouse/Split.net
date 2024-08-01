@@ -129,6 +129,7 @@ public class BasicTests
             this2.SplitOn(separator);
             this3.SplitOn(separator);
             this4.SplitOn(separator);
+            this5.SplitOn(separator);
 
             var separators1 = ". ";
             var separators2 = separators1.AsSpan();
@@ -172,6 +173,5 @@ public class BasicTests
             this4.SplitOnAny(search);
             this5.SplitOnAny(search);
         }
-
     }
 }

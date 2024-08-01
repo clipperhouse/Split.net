@@ -1,7 +1,7 @@
-﻿using System.Buffers;
-using System.Runtime.CompilerServices;
+﻿namespace Split;
 
-namespace Split;
+using System.Buffers;
+using System.Runtime.CompilerServices;
 
 public ref struct Enumerator<T> where T : IEquatable<T>
 {
@@ -35,7 +35,6 @@ public ref struct Enumerator<T> where T : IEquatable<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Enumerator<T> GetEnumerator() => this;
 
-
     /// <summary>
     /// Iterate over all tokens and collects them into a list, allocating a new array for each token.
     /// </summary>
@@ -53,7 +52,7 @@ public ref struct Enumerator<T> where T : IEquatable<T>
     /// <summary>
     /// Iterates over all tokens and collects them into an array, allocating a new array for each token.
     /// </summary>
-    /// <returns>byte[][] or char[][], depending on the input</returns>
+    /// <returns>byte[][] or char[][], depending on the input.</returns>
     public readonly T[][] ToArray()
     {
         return this.ToList().ToArray();
