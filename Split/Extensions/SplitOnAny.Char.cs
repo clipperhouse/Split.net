@@ -33,9 +33,11 @@ public static partial class SplitExtensions
     public static Enumerator<char> SplitOnAny(this ReadOnlySpan<char> source, SearchValues<char> separators) => Split.CharsAny(source, separators);
 
 
-    /// <inheritdoc cref="Split.CharsAny(TextReader, ReadOnlySpan{char})"/>
-    public static StreamEnumerator<char> SplitOnAny(this TextReader reader, ReadOnlySpan<char> separators) => Split.CharsAny(reader, separators);
+    /// <inheritdoc cref="Split.CharsAny(TextReader, SearchValues{char}, int, char[]?)"/>
+    public static StreamEnumerator<char> SplitOnAny(this TextReader reader, ReadOnlySpan<char> separators, int minBufferChars = 1024, char[]? bufferStorage = null)
+        => Split.CharsAny(reader, separators, minBufferChars, bufferStorage);
 
-    /// <inheritdoc cref="Split.CharsAny(TextReader, SearchValues{char})"/>
-    public static StreamEnumerator<char> SplitOnAny(this TextReader reader, SearchValues<char> separators) => Split.CharsAny(reader, separators);
+    /// <inheritdoc cref="Split.CharsAny(TextReader, SearchValues{char}, int, char[]?)"/>
+    public static StreamEnumerator<char> SplitOnAny(this TextReader reader, SearchValues<char> separators, int minBufferChars = 1024, char[]? bufferStorage = null)
+        => Split.CharsAny(reader, separators, minBufferChars, bufferStorage);
 }

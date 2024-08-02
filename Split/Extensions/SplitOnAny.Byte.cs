@@ -25,9 +25,11 @@ public static partial class SplitExtensions
     public static Enumerator<byte> SplitOnAny(this ReadOnlySpan<byte> source, SearchValues<byte> separators) => Split.BytesAny(source, separators);
 
 
-    /// <inheritdoc cref="Split.BytesAny(Stream, ReadOnlySpan{byte})"/>
-    public static StreamEnumerator<byte> SplitOnAny(this Stream stream, ReadOnlySpan<byte> separators) => Split.BytesAny(stream, separators);
+    /// <inheritdoc cref="Split.BytesAny(Stream, ReadOnlySpan{byte}, int, byte[]?)"/>
+    public static StreamEnumerator<byte> SplitOnAny(this Stream stream, ReadOnlySpan<byte> separators, int minBufferBytes = 1024, byte[]? bufferStorage = null)
+        => Split.BytesAny(stream, separators, minBufferBytes, bufferStorage);
 
-    /// <inheritdoc cref="Split.BytesAny(Stream, SearchValues{byte})"/>
-    public static StreamEnumerator<byte> SplitOnAny(this Stream stream, SearchValues<byte> separators) => Split.BytesAny(stream, separators);
+    /// <inheritdoc cref="Split.BytesAny(Stream, SearchValues{byte}, int, byte[]?)"/>
+    public static StreamEnumerator<byte> SplitOnAny(this Stream stream, SearchValues<byte> separators, int minBufferBytes = 1024, byte[]? bufferStorage = null)
+        => Split.BytesAny(stream, separators, minBufferBytes, bufferStorage);
 }

@@ -39,48 +39,72 @@ public static partial class Split
     /// <summary>
     /// Splits an incoming reader of chars into substrings, around a single-char separator.
     /// </summary>
-    /// <param name="stream">The source reader of chars.</param>
+    /// <param name="reader">The source reader of chars.</param>
     /// <param name="separator">The char on which to split the incoming reader.</param>
+    /// <param name="minBufferChars">Optional. The minimum number of chars to maintain in the buffer.</param>
+    /// <param name="bufferStorage">
+    /// Optional. The backing array for the required buffer. If not passed, a buffer of 2 * minBufferChars will be allocated automatically.
+    /// <para>You might pass your own buffer in order to manage your own allocations, such as with <see cref="ArrayPool{T}"/>.</para>
+    /// </param>
     /// <returns>An enumerator of subslices. Use foreach.</returns>
-    public static StreamEnumerator<char> Chars(TextReader stream, char separator)
+    public static StreamEnumerator<char> Chars(TextReader reader, char separator, int minBufferChars = 1024, char[]? bufferStorage = null)
     {
-        var buffer = new Buffer<char>(stream.Read, 1024);
+        bufferStorage ??= new char[minBufferChars * 2];
+        var buffer = new Buffer<char>(reader.Read, minBufferChars, bufferStorage);
         return new StreamEnumerator<char>(buffer, separator);
     }
 
     /// <summary>
     /// Split an incoming reader of chars into substrings, around a string (multi-char) separator.
     /// </summary>
-    /// <param name="stream">The source reader of chars.</param>
+    /// <param name="reader">The source reader of chars.</param>
     /// <param name="separator">The string on which to split the source reader.</param>
+    /// <param name="minBufferChars">Optional. The minimum number of chars to maintain in the buffer.</param>
+    /// <param name="bufferStorage">
+    /// Optional. The backing array for the required buffer. If not passed, a buffer of 2 * minBufferChars will be allocated automatically.
+    /// <para>You might pass your own buffer in order to manage your own allocations, such as with <see cref="ArrayPool{T}"/>.</para>
+    /// </param>
     /// <returns>An enumerator of subslices. Use foreach.</returns>
-    public static StreamEnumerator<char> Chars(TextReader stream, ReadOnlySpan<char> separator)
+    public static StreamEnumerator<char> Chars(TextReader reader, ReadOnlySpan<char> separator, int minBufferChars = 1024, char[]? bufferStorage = null)
     {
-        var buffer = new Buffer<char>(stream.Read, 1024);
+        bufferStorage ??= new char[minBufferChars * 2];
+        var buffer = new Buffer<char>(reader.Read, minBufferChars, bufferStorage);
         return new StreamEnumerator<char>(buffer, separator, true);
     }
 
     /// <summary>
     /// Split an incoming reader of chars into substrings, around any char in an array of separators.
     /// </summary>
-    /// <param name="stream">The source reader of chars.</param>
+    /// <param name="reader">The source reader of chars.</param>
     /// <param name="separators">The set of chars on which to split the source string. Any char in the collection will cause a split.</param>
+    /// <param name="minBufferChars">Optional. The minimum number of chars to maintain in the buffer.</param>
+    /// <param name="bufferStorage">
+    /// Optional. The backing array for the required buffer. If not passed, a buffer of 2 * minBufferChars will be allocated automatically.
+    /// <para>You might pass your own buffer in order to manage your own allocations, such as with <see cref="ArrayPool{T}"/>.</para>
+    /// </param>
     /// <returns>An enumerator of subslices. Use foreach.</returns>
-    public static StreamEnumerator<char> CharsAny(TextReader stream, ReadOnlySpan<char> separators)
+    public static StreamEnumerator<char> CharsAny(TextReader reader, ReadOnlySpan<char> separators, int minBufferChars = 1024, char[]? bufferStorage = null)
     {
-        var buffer = new Buffer<char>(stream.Read, 1024);
+        bufferStorage ??= new char[minBufferChars * 2];
+        var buffer = new Buffer<char>(reader.Read, minBufferChars, bufferStorage);
         return new StreamEnumerator<char>(buffer, separators);
     }
 
     /// <summary>
     /// Split an incoming reader of chars into substrings, around any char in <see cref="SearchValues{Char}"/>.
     /// </summary>
-    /// <param name="stream">The source reader of chars.</param>
+    /// <param name="reader">The source reader of chars.</param>
     /// <param name="separators"><see cref="SearchValues{Char}"/> is a type optimized for searching any in a set of chars.</param>
+    /// <param name="minBufferChars">Optional. The minimum number of chars to maintain in the buffer.</param>
+    /// <param name="bufferStorage">
+    /// Optional. The backing array for the required buffer. If not passed, a buffer of 2 * minBufferChars will be allocated automatically.
+    /// <para>You might pass your own buffer in order to manage your own allocations, such as with <see cref="ArrayPool{T}"/>.</para>
+    /// </param>
     /// <returns>An enumerator of subslices. Use foreach.</returns>
-    public static StreamEnumerator<char> CharsAny(TextReader stream, SearchValues<char> separators)
+    public static StreamEnumerator<char> CharsAny(TextReader reader, SearchValues<char> separators, int minBufferChars = 1024, char[]? bufferStorage = null)
     {
-        var buffer = new Buffer<char>(stream.Read, 1024);
+        bufferStorage ??= new char[minBufferChars * 2];
+        var buffer = new Buffer<char>(reader.Read, minBufferChars, bufferStorage);
         return new StreamEnumerator<char>(buffer, separators);
     }
 }

@@ -41,10 +41,16 @@ public static partial class Split
     /// </summary>
     /// <param name="stream">The source stream of bytes.</param>
     /// <param name="separator">The byte on which to split the string.</param>
+    /// <param name="minBufferBytes">Optional. The minimum number of bytes to maintain in the buffer.</param>
+    /// <param name="bufferStorage">
+    /// Optional. The backing array for the required buffer. If not passed, a buffer of 2 * minBufferChars will be allocated automatically.
+    /// <para>You might pass your own buffer in order to manage your own allocations, such as with <see cref="ArrayPool{T}"/>.</para>
+    /// </param>
     /// <returns>An enumerator of subslices. Use foreach.</returns>
-    public static StreamEnumerator<byte> Bytes(Stream stream, byte separator)
+    public static StreamEnumerator<byte> Bytes(Stream stream, byte separator, int minBufferBytes = 1024, byte[]? bufferStorage = null)
     {
-        var buffer = new Buffer<byte>(stream.Read, 1024);
+        bufferStorage ??= new byte[minBufferBytes * 2];
+        var buffer = new Buffer<byte>(stream.Read, minBufferBytes, bufferStorage);
         return new StreamEnumerator<byte>(buffer, separator);
     }
 
@@ -53,10 +59,16 @@ public static partial class Split
     /// </summary>
     /// <param name="stream">The source stream of bytes.</param>
     /// <param name="separator">The byte string on which to split the source string.</param>
+    /// <param name="minBufferBytes">Optional. The minimum number of bytes to maintain in the buffer.</param>
+    /// <param name="bufferStorage">
+    /// Optional. The backing array for the required buffer. If not passed, a buffer of 2 * minBufferChars will be allocated automatically.
+    /// <para>You might pass your own buffer in order to manage your own allocations, such as with <see cref="ArrayPool{T}"/>.</para>
+    /// </param>
     /// <returns>An enumerator of subslices. Use foreach.</returns>
-    public static StreamEnumerator<byte> Bytes(Stream stream, ReadOnlySpan<byte> separator)
+    public static StreamEnumerator<byte> Bytes(Stream stream, ReadOnlySpan<byte> separator, int minBufferBytes = 1024, byte[]? bufferStorage = null)
     {
-        var buffer = new Buffer<byte>(stream.Read, 1024);
+        bufferStorage ??= new byte[minBufferBytes * 2];
+        var buffer = new Buffer<byte>(stream.Read, minBufferBytes, bufferStorage);
         return new StreamEnumerator<byte>(buffer, separator, true);
 
     }
@@ -66,10 +78,16 @@ public static partial class Split
     /// </summary>
     /// <param name="stream">The source stream of bytes.</param>
     /// <param name="separators">The set of bytes on which to split the source string. Any byte in the collection will cause a split.</param>
+    /// <param name="minBufferBytes">Optional. The minimum number of bytes to maintain in the buffer.</param>
+    /// <param name="bufferStorage">
+    /// Optional. The backing array for the required buffer. If not passed, a buffer of 2 * minBufferChars will be allocated automatically.
+    /// <para>You might pass your own buffer in order to manage your own allocations, such as with <see cref="ArrayPool{T}"/>.</para>
+    /// </param>
     /// <returns>An enumerator of subslices. Use foreach.</returns>
-    public static StreamEnumerator<byte> BytesAny(Stream stream, ReadOnlySpan<byte> separators)
+    public static StreamEnumerator<byte> BytesAny(Stream stream, ReadOnlySpan<byte> separators, int minBufferBytes = 1024, byte[]? bufferStorage = null)
     {
-        var buffer = new Buffer<byte>(stream.Read, 1024);
+        bufferStorage ??= new byte[minBufferBytes * 2];
+        var buffer = new Buffer<byte>(stream.Read, minBufferBytes, bufferStorage);
         return new StreamEnumerator<byte>(buffer, separators);
     }
 
@@ -78,10 +96,16 @@ public static partial class Split
     /// </summary>
     /// <param name="stream">The source stream of bytes.</param>
     /// <param name="separators"><see cref="SearchValues{Byte}"/> is a type optimized for searching any in a set of bytes.</param>
+    /// <param name="minBufferBytes">Optional. The minimum number of bytes to maintain in the buffer.</param>
+    /// <param name="bufferStorage">
+    /// Optional. The backing array for the required buffer. If not passed, a buffer of 2 * minBufferChars will be allocated automatically.
+    /// <para>You might pass your own buffer in order to manage your own allocations, such as with <see cref="ArrayPool{T}"/>.</para>
+    /// </param>
     /// <returns>An enumerator of subslices. Use foreach.</returns>
-    public static StreamEnumerator<byte> BytesAny(Stream stream, SearchValues<byte> separators)
+    public static StreamEnumerator<byte> BytesAny(Stream stream, SearchValues<byte> separators, int minBufferBytes = 1024, byte[]? bufferStorage = null)
     {
-        var buffer = new Buffer<byte>(stream.Read, 1024);
+        bufferStorage ??= new byte[minBufferBytes * 2];
+        var buffer = new Buffer<byte>(stream.Read, minBufferBytes, bufferStorage);
         return new StreamEnumerator<byte>(buffer, separators);
     }
 }

@@ -95,4 +95,26 @@ public class Benchmark
 			// buffer.Append(token);
 		}
 	}
+
+	[Benchmark]
+	public void SplitStream()
+	{
+		sampleStream.Seek(0, SeekOrigin.Begin);
+		var splits = sampleStream.SplitOn((byte)' ');
+		foreach (var split in splits) { }
+	}
+
+	static readonly ArrayPool<byte> pool = ArrayPool<byte>.Shared;
+
+	[Benchmark]
+	public void SplitStreamArrayPool()
+	{
+		var storage = pool.Rent(4096);
+
+		sampleStream.Seek(0, SeekOrigin.Begin);
+		var splits = sampleStream.SplitOn((byte)' ', 2048, storage);
+		foreach (var split in splits) { }
+
+		pool.Return(storage);
+	}
 }
