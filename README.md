@@ -28,7 +28,7 @@ world.
 
 ### Performance
 
-This package exists to save allocations on the hot path, if you are using something like `strings.Split` from the standard library. Benchmarks:
+This package exists to save allocations on the hot path, if you are using something like `strings.Split` from the standard library. Benchmarks on ~100K of text:
 
 ```
 | Method            | Mean      | Error    | StdDev   | Throughput | Gen0    | Gen1   | Gen2   | Allocated |
@@ -52,7 +52,15 @@ Second, each split is a `Span`, which is a "view" into the underlying `string` o
 
 ### Data types
 
-This package supports `string`/`char` (UTF-16) and UTF-8 `byte[]`. We also support `Stream` of UTF-8 bytes and `TextReader`/`StreamReader` of `char`.
+`using Split;`
+
+You'll find `Split.Bytes()`, which can accept `byte[]`, `(ReadOnly)Span<byte>` and `Stream`. If you want to split on a multi-byte rune (Unicode codepoint), you'll need to get its encoding first, using something like `Encoding.UTF8.GetBytes()`.
+
+You'll find `Split.Chars()`, which can accept `string`, `char[]`, `(ReadOnly)Span<char>` and `TextReader`/`StreamReader`.
+
+`using Split.Extensions;`
+
+Each of the above types will have `.SplitOn()` methods. I chose that so as not to conflict with `.Split()`.
 
 ### Testing
 
