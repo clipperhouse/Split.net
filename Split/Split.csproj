@@ -4,14 +4,23 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <PackageId>SplitDotNet</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>clipperhouse</Authors>
+    <Description>Split strings and bytes with zero allocation and improved performance</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/clipperhouse/Split.net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/clipperhouse/Split.net</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Tests" />
+    <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+    <InternalsVisibleTo Include="Tests" />
   </ItemGroup>
 
   <PropertyGroup>

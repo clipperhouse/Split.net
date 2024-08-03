@@ -1,5 +1,4 @@
 using System.Buffers;
-using Microsoft.Extensions.Primitives;
 
 namespace Split.Extensions;
 
