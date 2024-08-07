@@ -9,23 +9,23 @@ dotnet add package SplitDotNet
 ```
 
 ```csharp
-using Split.Extensions;
-
 var example = "Hello, 🌏 world. 你好, 世界. ";
 
-var splits = example.Split(" ");
+var splits = example.SplitOn(" ");
 
 foreach (var split in splits)
 {
-    Console.WriteLine(split);
+    // split is a ReadOnlySpan<char>
 }
 
-/*
-Hello,🌏
-world.
-你好,
-世界.
-*/
+var bytes = Encoding.UTF8.GetBytes(example);
+var separators = " ,."u8.ToArray();
+var splits2 = bytes.SplitOnAny(separators);
+
+foreach (var split2 in splits2)
+{
+    // split2 is a ReadOnlySpan<byte>
+}
 ```
 
 ### Performance

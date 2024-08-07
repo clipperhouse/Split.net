@@ -19,20 +19,13 @@ public class BasicTests
             // split is a ReadOnlySpan<char>
         }
 
-        /*
-        Hello,🌏
-        world.
-        你好,
-        世界.
-        */
-
         var bytes = Encoding.UTF8.GetBytes(example);
         var separators = " ,."u8.ToArray();
         var splits2 = bytes.SplitOnAny(separators);
 
         foreach (var split2 in splits2)
         {
-            Console.OpenStandardOutput().Write([.. split2, (byte)'\n']);
+            // split2 is a ReadOnlySpan<byte>
         }
     }
 
