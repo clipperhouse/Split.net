@@ -12,11 +12,11 @@ public class BasicTests
     {
         var example = "Hello, 🌏 world. 你好, 世界. ";
 
-        var splits = example.Split(" ");
+        var splits = example.SplitOn(" ");
 
         foreach (var split in splits)
         {
-            Console.WriteLine(split);
+            // split is a ReadOnlySpan<char>
         }
 
         /*
