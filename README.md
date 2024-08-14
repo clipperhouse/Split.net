@@ -50,19 +50,21 @@ Standard library:
 
 This package does two things to achieve zero allocations. First, it lazily iterates over the splits, instead of collecting them into an array.
 
-Second, each split is a `Span`, which is a "view" into the underlying `string` or `byte[]`, and stays on the stack.
+Second, each split is a `Span`, which is a "view" into the underlying `string` or `byte[]`, and stays on the stack. [Here's a blog post](https://clipperhouse.com/split/).
 
 ### Data types
 
-`using Split;`
+**`using Split.Extensions;`**
 
-You'll find `Split.Bytes()`, which can accept `byte[]`, `(ReadOnly)Span<byte>` and `Stream`. If you want to split on a multi-byte rune (Unicode codepoint), you'll need to get its encoding first, using something like `Encoding.UTF8.GetBytes()`.
+You will find `.SplitOn()` and `.SplitOnAny()` extension methods added to: `string`, `byte[]`, `char[]`, `(ReadOnly)Span<char|byte>`, `Stream` and `TextReader`/`StreamReader` .
 
-You'll find `Split.Chars()`, which can accept `string`, `char[]`, `(ReadOnly)Span<char>` and `TextReader`/`StreamReader`.
+**`using Split;`**
 
-`using Split.Extensions;`
+If you don't like all those extension methods hanging off your types:
 
-Each of the above types will have `.SplitOn()` methods. I chose that so as not to conflict with `.Split()`.
+You'll find `Split.Bytes()` and `Split.BytesAny()`, accepting `byte[]`, `(ReadOnly)Span<byte>` and `Stream`.
+
+You'll find `Split.Chars()` and `Split.CharsAny()`, which can accept `string`, `char[]`, `(ReadOnly)Span<char>` and `TextReader`/`StreamReader`.
 
 ### Testing
 
